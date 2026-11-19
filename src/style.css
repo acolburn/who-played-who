@@ -1,0 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;0,800;1,400;1,700;1,800&display=swap");
+
+:root {
+  --color-primary: #1976d2;
+  --color-button-bg: #e8f3fc;
+  --color-button-bg-hover: #ffffff;
+  --color-text-dark: #14375a;
+  --color-text-light: #ffffff;
+  --color-text-accent: #bbdefb;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, sans-serif;
+}
