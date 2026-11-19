@@ -35,9 +35,7 @@ const startGame = async () => {
     let allResults = [];
     for (let page = 1; page <= 3; page++) {
       const response = await fetch(
-        `https://api.themoviedb.org/3/discover/tv?first_air_date.gte=1970-01-01&first_air_date.lte=2001-12-31&with_networks=16|6|2&sort_by=popularity.desc&language=en-US&with_genres=35&without_genres=16|10763|10764|10767&page=" +
-          page +
-          "&api_key=${apiKey}`,
+        `https://api.themoviedb.org/3/discover/tv?first_air_date.gte=1970-01-01&first_air_date.lte=2001-12-31&with_networks=16|6|2&sort_by=popularity.desc&language=en-US&with_genres=35&without_genres=16|10763|10764|10767&page=${page}&api_key=${apiKey}`,
       );
 
       // fetch() only throws on network failure, so check the HTTP status ourselves
