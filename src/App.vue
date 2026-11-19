@@ -1,9 +1,10 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import GameHeader from "./components/GameHeader.vue";
 import ChoiceButton from "./components/ChoiceButton.vue";
 import NextQuestionButton from "./components/NextQuestionButton.vue";
 
+const TOTAL_ROUNDS = 8;
 const apiKey = import.meta.env.VITE_TMDB_API_KEY;
 const appName = ref("Who Played Who");
 const gameStarted = ref(false);
@@ -16,17 +17,29 @@ const currentRound = ref({
 const feedbackMessage = ref("");
 const score = ref(0);
 const hasAnswered = ref(false);
-
+const roundNumber = ref(0);
+const isGameOver = computed(() => {
+  return roundNumber.value > TOTAL_ROUNDS;
+});
 function shuffleArray(arr) {
   arr.sort(function (a, b) {
     return Math.random() - 0.5;
   });
 }
 
+const restartGame = async () => {
+  roundNumber.value = 0;
+  score.value = 0;
+  await startGame();
+};
+
 const startGame = async () => {
   gameStarted.value = true;
   hasAnswered.value = false;
   feedbackMessage.value = "";
+  // After round 8, counter gets to 9, isGame over triggers game-over screen
+  roundNumber.value =
+    roundNumber.value < TOTAL_ROUNDS ? roundNumber.value + 1 : TOTAL_ROUNDS + 1;
 
   try {
     // Send the request to TMDB and wait for the response
@@ -127,31 +140,42 @@ const selectChoice = (characterName) => {
 <template>
   <div class="app-shell">
     <GameHeader :title="appName" />
+
     <button v-if="!gameStarted" class="start-button" @click="startGame">
       Start Game
     </button>
     <main v-if="gameStarted" class="game-board">
-      <h3 class="score-display">Score: {{ score }}</h3>
+      <h3 class="score-display">
+        <!-- Round never shows anything above 'Round: 8' -->
+        Round: {{ Math.min(roundNumber, TOTAL_ROUNDS) }}, Score: {{ score }}
+      </h3>
       <h3 class="score-display" style="color: white; font-size: 1.2rem">
         {{ feedbackMessage }}
       </h3>
-      <h2 class="show-title">{{ currentRound.showName }}</h2>
-      <div class="round-layout">
-        <img
-          class="actor-photo"
-          :src="currentRound.actorPhotoUrl"
-          :alt="`Photo of a character from ${currentRound.showName}`"
-        />
-        <ul class="choices-list">
-          <ChoiceButton
-            v-for="choice in currentRound.choices"
-            :key="choice"
-            :characterName="choice"
-            @selectChoice="selectChoice"
+      <section v-if="gameStarted && isGameOver" class="score-display">
+        <h2>Game Over!</h2>
+        <p>You scored {{ score }} out of {{ TOTAL_ROUNDS }}.</p>
+        <button @click="restartGame" class="start-button">Play Again</button>
+      </section>
+      <section v-if="gameStarted && !isGameOver">
+        <h2 class="show-title">{{ currentRound.showName }}</h2>
+        <div class="round-layout">
+          <img
+            class="actor-photo"
+            :src="currentRound.actorPhotoUrl"
+            :alt="`Photo of a character from ${currentRound.showName}`"
           />
-        </ul>
-      </div>
-      <NextQuestionButton @nextQuestion="startGame" />
+          <ul class="choices-list">
+            <ChoiceButton
+              v-for="choice in currentRound.choices"
+              :key="choice"
+              :characterName="choice"
+              @selectChoice="selectChoice"
+            />
+          </ul>
+        </div>
+        <NextQuestionButton @nextQuestion="startGame" />
+      </section>
     </main>
   </div>
 </template>
