@@ -40,6 +40,8 @@ const startGame = async () => {
   // After round 8, counter gets to 9, isGame over triggers game-over screen
   roundNumber.value =
     roundNumber.value < TOTAL_ROUNDS ? roundNumber.value + 1 : TOTAL_ROUNDS + 1;
+  // When game is over, no need to do the rest of the method
+  if (roundNumber.value > TOTAL_ROUNDS) return;
 
   try {
     // Send the request to TMDB and wait for the response
