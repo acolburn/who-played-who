@@ -45,26 +45,7 @@ const startGame = async () => {
   if (roundNumber.value > TOTAL_ROUNDS) return;
 
   try {
-    // Send the request to TMDB and wait for the response
-    // Max 20 results per page; fetch 3 pages for pool up to 60 shows
-    // searchs for comedies from 1970-2991, without talk shows, reality, etc., on CBS, NBC, ABC
-    let allResults = [];
-    for (let page = 1; page <= 3; page++) {
-      const response = await fetch(
-        `https://api.themoviedb.org/3/discover/tv?first_air_date.gte=1970-01-01&first_air_date.lte=2001-12-31&with_networks=16|6|2&sort_by=popularity.desc&language=en-US&with_genres=35&without_genres=16|10763|10764|10767&page=${page}&api_key=${apiKey}`,
-      );
-
-      // fetch() only throws on network failure, so check the HTTP status ourselves
-      if (!response.ok) {
-        throw new Error(
-          `TMDB discover request failed (status ${response.status})`,
-        );
-      }
-
-      // Convert the raw response text into usable JSON
-      const data = await response.json();
-      allResults = allResults.concat(data.results);
-    }
+    const allResults = showPool.value;
 
     // Try up to 10 random shows until one has enough cast data
     for (let attempt = 0; attempt < 10; attempt++) {
@@ -72,26 +53,13 @@ const startGame = async () => {
       const randomIndex = Math.floor(Math.random() * allResults.length);
       const selectedShow = allResults[randomIndex];
 
-      // get cast of selected show
-      const data2 = await fetch(
-        `https://api.themoviedb.org/3/tv/${selectedShow.id}/credits?api_key=${apiKey}`,
-      );
-      // If this show's cast request failed, just try another show
-      if (!data2.ok) {
-        console.warn(
-          `Couldn't fetch cast for "${selectedShow.name}" (status ${data2.status}).`,
-        );
-        continue;
-      }
-
-      const selectedShowCast = await data2.json();
       // Filter out any cast members who don't have a profile image
-      const actorsWithPhotos = selectedShowCast.cast.filter(
+      const actorsWithPhotos = selectedShow.cast.filter(
         (actor) => actor.profile_path !== null,
       );
       // Make sure there's at least one photo, and three more characters for the multiple choice
       // skip to the next show (start loop over( if the cast can't fill a round
-      if (actorsWithPhotos.length === 0 || selectedShowCast.cast.length < 4) {
+      if (actorsWithPhotos.length === 0 || selectedShow.cast.length < 4) {
         console.warn(`"${selectedShow.name}" doesn't have enough cast data.`);
         continue;
       }
@@ -99,7 +67,7 @@ const startGame = async () => {
       const correctIndex = Math.floor(Math.random() * actorsWithPhotos.length);
       const correctCharacter = actorsWithPhotos[correctIndex];
       // Filter out the correct actor, shuffle the rest, and pick 3 wrong choices + correct response for UI display
-      const otherCharacters = selectedShowCast.cast.filter(
+      const otherCharacters = selectedShow.cast.filter(
         (actor) => actor.name !== correctCharacter.name,
       );
       shuffleArray(otherCharacters);
