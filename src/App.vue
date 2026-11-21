@@ -1,12 +1,13 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import GameHeader from "./components/GameHeader.vue";
 import ChoiceButton from "./components/ChoiceButton.vue";
 import NextQuestionButton from "./components/NextQuestionButton.vue";
 
 const TOTAL_ROUNDS = 8;
+const showPool = ref([]);
 const apiKey = import.meta.env.VITE_TMDB_API_KEY;
-const appName = ref("Who Played Who");
+const appName = ref("Who Played Who (Must See TV Edition)");
 const gameStarted = ref(false);
 const currentRound = ref({
   showName: "Friends",
@@ -137,6 +138,18 @@ const selectChoice = (characterName) => {
       "Response already selected. Tap Next Question to continue.";
   }
 };
+
+// Load show data when app starts
+onMounted(async () => {
+  try {
+    const response = await fetch("/shows-data.json");
+    const data = await response.json();
+    showPool.value = data.shows;
+  } catch (error) {
+    // If the internet is down or the URL has a typo, catch the error gracefully
+    console.error("Something went wrong fetching data:", error);
+  }
+});
 </script>
 
 <template>
