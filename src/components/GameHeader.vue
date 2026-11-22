@@ -2,7 +2,7 @@
 import { ref } from "vue";
 
 const title = ref("Who Played Who?");
-const description = ref("Match the actor to their role!");
+const description = ref("Match the actor to their Must See TV role!");
 
 const props = defineProps({ title: String });
 </script>
