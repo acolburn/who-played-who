@@ -7,11 +7,23 @@ const showNames = [
   "Cheers",
   "The Cosby Show",
   "Family Ties",
+  "Night Court",
   "Hill Street Blues",
+  "Taxi",
   "Seinfeld",
   "Wings",
+  "The Fresh Prince of Bel-Air",
+  "Blossom",
   "Mad About You",
   "Frasier",
+  "LA Law",
+  "Friends",
+  "ER",
+  "Will & Grace",
+  "Caroline in the City",
+  "Just Shoot Me!",
+  "3rd Rock from the Sun",
+  "NewsRadio",
 ];
 
 async function fetchShowData(showName) {
