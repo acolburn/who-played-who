@@ -155,9 +155,14 @@ onMounted(async () => {
               :characterName="choice"
               @selectChoice="selectChoice"
             />
+            <div class="landscape-orientation">
+              <NextQuestionButton @nextQuestion="startGame" />
+            </div>
           </ul>
         </div>
-        <NextQuestionButton @nextQuestion="startGame" />
+        <div class="portrait-orientation">
+          <NextQuestionButton @nextQuestion="startGame" />
+        </div>
       </section>
     </main>
   </div>
@@ -261,6 +266,23 @@ onMounted(async () => {
 
 .start-button:hover {
   background: var(--color-button-bg-hover);
+}
+
+.landscape-orientation,
+.portrait-orientation {
+  display: none;
+}
+
+@media (orientation: portrait) {
+  .portrait-orientation {
+    display: block;
+  }
+}
+
+@media (orientation: landscape) {
+  .landscape-orientation {
+    display: block;
+  }
 }
 
 @media (max-width: 700px) {
